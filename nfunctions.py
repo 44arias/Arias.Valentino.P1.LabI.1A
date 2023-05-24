@@ -23,7 +23,20 @@ def menu():
         7. Guardar en formato JSON.
         8. Leer desde formato JSON.
         9. Actualizar precios.
-        10. Salir del programa.
+        10. Acceder al siguiente menu.
+        11. Salir del programa.
+        """)
+    opcion = input("Ingrese una opción: ")
+    return opcion
+
+
+def menu2():
+    print("""
+        1. Agregar nuevo producto.
+        2. Mostrar datos.
+        3. Actualizar datos.
+        4. Volver al menu anterior.
+        5. Salir del programa.
         """)
     opcion = input("Ingrese una opción: ")
     return opcion
@@ -103,9 +116,9 @@ def listar_insumos_por_marca(lista: list, key: str, key2: str, key3: str):
 
     Args:
         lista (list): Lista de insumos.
-        key (str): Key de 'marca'.
-        ket2 (str): Key de 'nombre'.
-        key3 (str): Key de 'precio'.
+        key (str): Key de marca del producto.
+        ket2 (str): Key de nombre del producto.
+        key3 (str): Key de precio del producto.
 
     Returns:
         list: Lista de listas con la marca, el nombre y el precio de cada insumo.
@@ -152,9 +165,9 @@ def ordenar_insumos(lista: list, key: str, key2: int, key3: str):
 
     Args:
         lista (list): Lista de insumos.
-        key (str): Key de marca.
-        key2 (int): Key de precio.
-        key3 (str): Key de caracteristicas.
+        key (str): Key de marca del producto.
+        key2 (int): Key de precio del producto.
+        key3 (str): Key de caracteristicas del producto.
 
     Returns:
         list: Lista de insumos ordenados.
@@ -360,7 +373,8 @@ def leer_desde_formato_json():
             print(f"Marca: {producto['marca']}")
             print(f"Precio: {producto['precio']}")
             print(f"Características: {producto['caracteristicas']}")
-            print("--------------------------------------------------------------------------")
+            print(
+                "--------------------------------------------------------------------------")
 
     except FileNotFoundError:
         print("No se encontró el archivo JSON. Primero debe generar el archivo utilizando la opción 7.")
@@ -403,3 +417,195 @@ def actualizar_precios(lista_insumos: list):
         writer.writerows(lista_insumos_actualizados)
 
     print("Los precios se han actualizado correctamente y se han guardado en el archivo 'Insumos.csv'.")
+
+# ----------------------------------------------------------------------------------------------------
+# Requerimientos extra
+# 1
+
+
+def cargar_marcas():
+    """
+    Carga las marcas disponibles desde el archivo marcas.txt.
+
+    Returns:
+        list: Lista de marcas disponibles.
+    """
+    marcas = []
+    with open('marcas.txt', 'r') as archivo:
+        for linea in archivo:
+            marcas.append(linea.strip())
+    return marcas
+
+
+def validar_numero(entrada):
+    """
+    Valida que la entrada sea un número entero positivo.
+
+    Args:
+        entrada: Valor ingresado por el usuario.
+
+    Returns:
+        int or None: El valor convertido a entero si es válido, None si no es válido.
+    """
+    try:
+        numero = int(entrada)
+        if numero > 0:
+            return numero
+    except ValueError:
+        pass
+    return None
+
+
+def agregar_nuevo_producto(lista: list, key: str, key2: str, key3: str, key4: str, key5: str):
+    """
+    Agrega un nuevo producto a la lista de insumos.
+
+    Args:
+        lista (list): Lista de insumos.
+        key (str): Key de id del producto.
+        key2 (str): Key de nombre del producto.
+        key3 (str): Key de marca del producto.
+        key4 (str): Key de precio del producto.
+        key5 (str): Key de características del producto.
+
+    Returns:
+        list: Lista de insumos actualizada.
+    """
+    nuevo_producto = {}
+
+    marcas = cargar_marcas()
+    print("Marcas disponibles:")
+    for marca in marcas:
+        print(marca)
+
+    while True:
+        marca = input(
+            "Ingrese la marca del producto ('x' para cancelar): ").capitalize()
+        if marca == 'X':
+            print("Cancelando. No se agregó ningún producto.")
+            return lista
+        elif marca not in marcas or marca.isdigit():
+            print("Marca inválida. Por favor, ingrese una marca válida.")
+            continue
+        else:
+            nuevo_producto[key3] = marca
+            break
+
+    while True:
+        id_producto = input("Ingrese el ID del producto ('x' para cancelar): ")
+        if id_producto == 'X':
+            print("Cancelando. No se agregó ningún producto.")
+            return lista
+        elif not id_producto.isdigit() or int(id_producto) <= 0:
+            print("ID inválido. Por favor, ingrese un ID válido.")
+            continue
+        else:
+            for producto in lista:
+                if producto[key] == id_producto:
+                    print("Ya existe un producto con ese ID:")
+                    print(producto)
+                    return lista
+
+            nuevo_producto[key] = id_producto
+            break
+
+    while True:
+        nombre = input("Ingrese el nombre del producto ('x' para cancelar): ").capitalize()
+        if nombre == 'X':
+            print("Cancelando. No se agregó ningún producto.")
+            return lista
+        elif nombre.isdigit():
+            print("Nombre inválido. Por favor, ingrese un nombre válido.")
+        else:
+            nuevo_producto[key2] = nombre.capitalize()
+            break
+
+    while True:
+        precio = input("Ingrese el precio del producto ('x' para cancelar): ")
+        if precio == 'x':
+            print("Cancelando. No se agregó ningún producto.")
+            return lista
+        elif not precio.replace('.', '', 1).isdigit():
+            print("Precio inválido. Por favor, ingrese un número válido.")
+            continue
+        else:
+            nuevo_producto[key4] = float(precio)
+            break
+
+    caracteristicas_agregadas = 0
+    while caracteristicas_agregadas < 3:
+        opcion = input(
+            f"Ingrese la característica {caracteristicas_agregadas + 1} ('x' para cancelar, 'xx' para finalizar): ").capitalize()
+
+        if opcion == 'X':
+            print("Cancelando. No se agregó ningún producto.")
+            return lista
+        elif opcion == 'Xx':
+            break
+
+        if opcion.isdigit():
+            print(
+                "Característica inválida. Por favor, ingrese una característica válida.")
+            continue
+        else:
+            key5 = f'caracteristica_{caracteristicas_agregadas + 1}'
+            caracteristicas = nuevo_producto.get(key5, "")
+            if caracteristicas:
+                caracteristicas += "~" + opcion
+            else:
+                caracteristicas = opcion
+            nuevo_producto[key5] = caracteristicas
+            caracteristicas_agregadas += 1
+
+    if opcion == 'xx':
+        for i in range(caracteristicas_agregadas + 1, 4):
+            caracteristica_key = f'caracteristica_{i}'
+            nuevo_producto[caracteristica_key] = ""
+
+    lista.append(nuevo_producto)
+    return lista
+
+
+# ----------------------------------------------------------------------------------------------------
+# Requerimientos extra
+# 2
+
+def actualizar_datos(lista: list, key: str, key2: str, key3: str, key4: str, key5: str):
+    """
+    Actualiza y guarda los datos de la lista en un archivo en el formato especificado.
+
+    Args:
+        lista (list): Lista de productos.
+        key (str): Key de id del producto.
+        key2 (str): Key de nombre del producto.
+        key3 (str): Key de marca del producto.
+        key4 (str): Key de precio del producto.
+        key5 (str): Key de características del producto.
+
+    Returns:
+        None
+    """
+    formato = input("Ingrese el formato de exportación (csv/json): ")
+
+    if formato.lower() == "csv":
+        with open("nuevos_insumos.csv", "w", newline="") as archivo:
+            escritor = csv.writer(archivo)
+            escritor.writerow(
+                ["ID", "NOMBRE", "MARCA", "PRECIO", "CARACTERISTICAS"])
+            for producto in lista:
+                escritor.writerow([
+                    producto[key],
+                    producto[key2],
+                    producto[key3],
+                    producto[key4],
+                    producto[key5]
+                ])
+
+        print("Datos actualizados guardados en el archivo nuevos_insumos.csv.")
+    elif formato.lower() == "json":
+        with open("nuevos_insumos.json", "w") as archivo:
+            json.dump(lista, archivo)
+
+        print("Datos actualizados guardados en el archivo nuevos_insumos.json.")
+    else:
+        print("Formato de exportación inválido. No se guardaron los datos actualizados.")

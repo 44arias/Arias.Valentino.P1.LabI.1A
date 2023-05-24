@@ -11,6 +11,7 @@ lista_insumos = formatear_csv(path)
 # Menú
 
 flag_primero = False
+flag_primero_menu_2 = False
 
 while True:
     opcion = menu()
@@ -72,6 +73,39 @@ while True:
             actualizar_precios(lista_insumos)
             print("Precios actualizados.")
         elif opcion == '10':
+            os.system('cls')
+            while True:
+                opcion = menu2()
+                os.system('cls')
+                if opcion == "1":
+                    flag_primero_menu_2 = True
+                    lista_productos = agregar_nuevo_producto(lista_insumos, 'id', 'nombre', 'marca', 'precio', 'caracteristicas')
+                elif flag_primero_menu_2:
+                    if opcion == "2":
+                        mostrar_datos_productos(lista_productos)
+                    elif opcion == '3':
+                        actualizar_datos(lista_productos,'id', 'nombre', 'marca', 'precio', 'caracteristicas')
+                    elif opcion == '4':
+                        menu()
+                    elif opcion == "5":
+                        salir = input("Confirma salida? (s/n): ")
+                        if salir == 's':
+                            os.system('cls')
+                            print("Vuelva pronto!")
+                            break
+                        elif salir == 'n':
+                            continue
+                        else:
+                            print("Opción inválida. Por favor, ingrese una opción válida. (s/n): ")
+                            continue
+                    else:
+                        print("Opción inválida. Por favor, ingrese una opción válida.")
+                elif opcion == '5':
+                    break
+                else:
+                    print("Debe cargar los datos primeros...")
+                os.system('pause')
+        elif opcion == '11':
             salir = input("Confirma salida? (s/n): ")
             if salir == 's':
                 os.system('cls')
@@ -84,7 +118,7 @@ while True:
                 continue
         else:
             print("Opción inválida. Por favor, ingrese una opción válida.")
-    elif opcion == '10':
+    elif opcion == '11':
         break
     else:
         print("Debe cargar los datos primeros...")
